@@ -1,25 +1,8 @@
-import tweepy
-from tweepy import OAuthHandler
 from tweepy import Stream
 from tweepy.streaming import StreamListener
-import harvester.api
 
 # derived from <https://gist.github.com/graydon/11198540>
 AUS_BOUND_BOX = (113.338953078, -43.6345972634, 153.569469029, -10.6681857235)
-
-
-# to be added
-consumer_key = ''
-consumer_secret = ''
-access_token = ''
-access_secret = ''
-
-# Authentication
-auth = OAuthHandler(consumer_key, consumer_secret)
-auth.set_access_token(access_token, access_secret)
-
-# api is our entry point for most of operations we can do with Twitter
-api = tweepy.API(auth)
 
 
 class MyListener (StreamListener):
@@ -29,21 +12,28 @@ class MyListener (StreamListener):
     is what we need. We need to extend the StreamListener() to
     customise the way we process the incoming data.
     """
+    def __init__(self, db):
+        self.db = db
+
     def on_data(self, raw_data):
-        pass
+        self.db.store(raw_data)
+        print(raw_data)
 
     def on_status(self, status):
-        pass
+        print(status)
 
     def on_error(self, status_code):
-        pass
+        print(status_code)
 
 
-class SteamRunner:
+class StreamRunner:
+    def __init__(self, auth, db):
+        self.db = db
+        self.auth = auth
 
     def run(self):
-        twitter_stream = Stream(auth, MyListener())
-        twitter_stream.filter(locations=AUS_BOUND_BOX)
+        twitter_stream = Stream(self.auth, MyListener(self.db))
+        twitter_stream.filter(locations=list(AUS_BOUND_BOX))
 
 
 
