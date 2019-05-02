@@ -1,30 +1,29 @@
 import tweepy
 from tweepy import OAuthHandler
 
-import db
 import sys
 
 # to be added
-from harvester import StreamTwitter
+from harvester import StreamTwitter, Database
 from harvester.SearchTwitter import Search
 
-consumer_key = ''
-consumer_secret = ''
-access_token = ''
-access_secret = ''
+access_token = "1117988833436397568-vtgxrL2x0lhJvcPi8tKuRLntAKVqGB"
+access_token_secret = "Uwioa9O9RNsA5JygK0bHX84UxsOKiMF283OQpeporN334"
+consumer_key = "IzabACqOqQ2XNshVSjA1lRWHp"
+consumer_secret = "rzVQDBOggdsO5NsKj6rzKYCRIMEI94t9Ka2XlkICNxg3gnt63i"
 
 # Authentication
 auth = OAuthHandler(consumer_key, consumer_secret)
-auth.set_access_token(access_token, access_secret)
+auth.set_access_token(access_token, access_token_secret)
 
 # api is our entry point for most of operations we can do with Twitter
-api = tweepy.API(auth)
+# api = tweepy.API(auth)
 
 # connect to db
-url = ""
-db_name = ""
+url = "http://localhost:5984"
+db_name = "tweet_test"
 
-db = db.DB(url, db_name)
+db = Database.DB(url, db_name)
 
 
 def main(argv):
@@ -37,4 +36,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main("stream")
+    # main(sys.argv)

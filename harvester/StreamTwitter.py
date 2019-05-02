@@ -1,3 +1,5 @@
+import json
+
 from tweepy import Stream
 from tweepy.streaming import StreamListener
 
@@ -16,7 +18,9 @@ class MyListener (StreamListener):
         self.db = db
 
     def on_data(self, raw_data):
-        self.db.store(raw_data)
+        # record = pre-processing(raw_data)
+        # self.db.store(json.loads(record))
+        self.db.store(json.loads(raw_data))
         print(raw_data)
 
     def on_status(self, status):
@@ -33,7 +37,7 @@ class StreamRunner:
 
     def run(self):
         twitter_stream = Stream(self.auth, MyListener(self.db))
-        twitter_stream.filter(locations=list(AUS_BOUND_BOX))
+        twitter_stream.filter(locations=AUS_BOUND_BOX)
 
 
 
