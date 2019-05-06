@@ -1,6 +1,6 @@
 import json
-
-from tweepy import Stream
+import multiprocessing
+from tweepy import Stream, OAuthHandler
 from tweepy.streaming import StreamListener
 
 # derived from <https://gist.github.com/graydon/11198540>
@@ -21,23 +21,32 @@ class MyListener (StreamListener):
         # record = pre-processing(raw_data)
         # self.db.store(json.loads(record))
         self.db.store(json.loads(raw_data))
-        print(raw_data)
+        # print(raw_data)
 
     def on_status(self, status):
         print(status)
 
     def on_error(self, status_code):
-        print(status_code)
+        print("error: ", status_code)
 
 
 class StreamRunner:
-    def __init__(self, auth, db):
+    def __init__(self, db):
         self.db = db
-        self.auth = auth
 
-    def run(self):
-        twitter_stream = Stream(self.auth, MyListener(self.db))
-        twitter_stream.filter(locations=AUS_BOUND_BOX)
+    def run(self, group):
+        access_token = group["access_token"]
+        access_token_secret = group["access_token_secret"]
+        consumer_key = group["consumer_key"]
+        consumer_secret = group["consumer_secret"]
+        keywords = group["keywords"]
+
+        # Authentication
+        auth = OAuthHandler(consumer_key, consumer_secret)
+        auth.set_access_token(access_token, access_token_secret)
+
+        twitter_stream = Stream(auth, MyListener(self.db))
+        twitter_stream.filter(track=keywords, locations=AUS_BOUND_BOX, languages=['en'])
 
 
 
