@@ -10,7 +10,7 @@ from harvester.SearchTwitter import Search
 
 
 def main(argv):
-    with open("harvester_config.json", 'r') as template:
+    with open("./harvester/harvester_config.json", 'r') as template:
         data = json.load(template)
         Groups = data["Groups"]
         new_groups = keyword_distribution(Groups)
@@ -22,11 +22,11 @@ def main(argv):
         db = Database.DB(url, db_name)
 
         i = int(argv[2])
-        if argv[1] == 'stream' and 0 < i < len(new_groups):
+        if argv[1] == 'stream' and 0 < i <= len(new_groups):
             print("Now start Streaming...")
             stream_mode = StreamTwitter.StreamRunner(db)
             stream_mode.run(new_groups[i-1])
-        elif argv[1] == 'search' and 0 < i < len(new_groups):
+        elif argv[1] == 'search' and 0 < i <= len(new_groups):
             print("Now start Searching...")
             search_mode = Search(db, geocode)
             search_mode.run(new_groups[i-1])
@@ -40,7 +40,7 @@ def main(argv):
 
 
 def keyword_distribution(Groups):
-    with open("offensive_words_corpus.txt", 'r') as corpus:
+    with open("./harvester/offensive_words_corpus.txt", 'r') as corpus:
         indicator = 0
         group_size = len(Groups)
         for keyword in corpus:
@@ -54,4 +54,4 @@ if __name__ == '__main__':
     # main(sys.argv)
 
     # for testing
-    main(["", "search", "1"])
+    main(["", "search", "4"])

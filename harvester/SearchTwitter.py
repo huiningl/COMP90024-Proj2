@@ -22,7 +22,10 @@ class Search:
         # else default to no lower limit, go as far back as API allows
         since_id = None if para_dict["since_id"] == -1 else para_dict["since_id"]
         tweets_per_query = 100
-        query = ' OR '.join(para_dict["keywords"])  # query contains up to 10 keywords
+        if len(para_dict["keywords"]) > 10:
+            query = ' OR '.join(para_dict["keywords"][:10])  # query contains up to 10 keywords
+        else:
+            query = ' OR '.join(para_dict["keywords"])
         print("query:  ", query)
 
         new_tweets = self.do_search(api, query, self.geocode, tweets_per_query, lang='en', since_id=since_id,
@@ -32,7 +35,7 @@ class Search:
             para_dict["since_id"] = new_tweets[0].id
             for tweet in new_tweets:
                 print(tweet)
-                self.db.store(tweet)
+                self.db.store(tweet._json)
             max_id = new_tweets[-1].id  # oldest id was used, as we continue retrieving tweets posted even more earlier
 
         while True:
@@ -41,7 +44,7 @@ class Search:
             if new_tweets:
                 for tweet in new_tweets:
                     print(tweet)
-                    self.db.store(tweet)
+                    self.db.store(tweet._json)
                 max_id = new_tweets[-1].id
 
     def do_search(self, api, query, geocode, count=100, lang='en', since_id=None, max_id=-1):
@@ -63,7 +66,6 @@ class Search:
         access_token_secret = group["access_token_secret"]
         consumer_key = group["consumer_key"]
         consumer_secret = group["consumer_secret"]
-        keywords = group["keywords"]
 
         # Authentication
         auth = OAuthHandler(consumer_key, consumer_secret)
@@ -85,8 +87,9 @@ class Search:
             try:
                 self.search_by_keyword(para_dict, api)
             except Exception as e:
+                print(e)
                 until = int(api.last_response.headers['x-rate-limit-reset'])
-                # Parse the UTC time
+
                 until = datetime.fromtimestamp(until)
                 delay = (until - datetime.now()).total_seconds()
                 print("Rate Limit Reached! Search API not available until {}.".format(until))

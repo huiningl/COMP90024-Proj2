@@ -1,7 +1,7 @@
 import multiprocessing
-
+import json
 import couchdb
-from couchdb import json, PreconditionFailed
+from couchdb import PreconditionFailed
 
 
 class DB:
