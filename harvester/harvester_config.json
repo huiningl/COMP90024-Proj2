@@ -30,6 +30,7 @@
     }
   ],
   "db_url": "http://localhost:5984",
+  "search_keywords": ["fuck", "cunt", "bitch", "coon", "faggot", "gook", "boong", "cock", "ass", "shit"],
   "db_name": "raw_tweets",
   "locations": [
     13.338953078,
