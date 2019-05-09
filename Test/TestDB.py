@@ -32,7 +32,9 @@ if __name__ == '__main__':
                 hashtag_occurrence[each['text'].upper()] = 1
             else:
                 hashtag_occurrence[each['text'].upper()] += 1
-
+    results_db = Database.DB(url, 'test_db')
+    record = {"_id": "trending_hashtags", "data": hashtag_occurrence}
+    results_db.database.save(record)
     # hashtag_occurrence = sorted(hashtag_occurrence.items(), reverse=True, key=lambda x: x[-1])
     #
     # couch = couchdb.Server(url=url)
@@ -43,20 +45,20 @@ if __name__ == '__main__':
     #
     # record = {"ordered_hashtags": hashtag_occurrence}
 
-    count_terms_only = Counter()
-    count_terms_only.update(hashtag_occurrence)
-    top10 = count_terms_only.most_common(10)
-    figure = plt.figure()
-    hashtag, occurrences = zip(*top10)
-    axes = figure.add_axes()
-    data = {'y': occurrences, 'x': hashtag}
-    # plt.bar(range(len(top10)), top10)
-    bar_chart = vincent.Bar(data, iter_idx='x')
-    bar_chart.axis_titles(x='Hashtags', y='Occurrences',)
-    rotate_x = AxisProperties(labels=PropertySet(angle=ValueRef(value=45), align=ValueRef(value='left')))
-    bar_chart.axes[0].properties = rotate_x
-    bar_chart.to_json('sample.json')
-    print(bar_chart.grammar)
+    # count_terms_only = Counter()
+    # count_terms_only.update(hashtag_occurrence)
+    # top10 = count_terms_only.most_common(10)
+    # figure = plt.figure()
+    # hashtag, occurrences = zip(*top10)
+    # axes = figure.add_axes()
+    # data = {'y': occurrences, 'x': hashtag}
+    # # plt.bar(range(len(top10)), top10)
+    # bar_chart = vincent.Bar(data, iter_idx='x')
+    # bar_chart.axis_titles(x='Hashtags', y='Occurrences',)
+    # rotate_x = AxisProperties(labels=PropertySet(angle=ValueRef(value=45), align=ValueRef(value='left')))
+    # bar_chart.axes[0].properties = rotate_x
+    # bar_chart.to_json('sample.json')
+    # print(bar_chart.grammar)
     # test_hashtag.save(record)
     # print(hashtag_occurrence)
 

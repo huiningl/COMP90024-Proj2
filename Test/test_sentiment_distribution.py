@@ -40,6 +40,10 @@ if __name__ == '__main__':
                 temp_dict['sentiment'] = each.value['sentiment']
                 sentiment_cor_list.append(temp_dict)
 
+    results_db = couchdb.Server(url=url)['test_db']
+
+    record = {'_id': "sentiment_distribution", "data": sentiment_cor_list}
+    results_db.save(record)
     fig = plt.figure()
     for each in sentiment_cor_list:
         plt.plot(each['coordinates'])
@@ -47,9 +51,9 @@ if __name__ == '__main__':
     server = couchdb.Server(url=url)
     test_db = server['test_db']
     fig.savefig('test_fig.png')
-    f = open('test_fig.png', 'r', encoding='utf-8')
-    new_record = {"fig_data": sentiment_cor_list}
-    # new_record['_id'] = "1"
-    # test_db.save(new_record)
-    # test_db.put_attachment(doc=new_record, content=f, filename='figure.png', content_type='image/png')
-    f.close()
+    # f = open('test_fig.png', 'r', encoding='utf-8')
+    # new_record = {"fig_data": sentiment_cor_list}
+    # # new_record['_id'] = "1"
+    # # test_db.save(new_record)
+    # # test_db.put_attachment(doc=new_record, content=f, filename='figure.png', content_type='image/png')
+    # f.close()

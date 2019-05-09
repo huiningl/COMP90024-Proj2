@@ -5,6 +5,9 @@ class SentimentPlaceAnalytics:
         self.source_db = source_db
         self.results_db = results_db
 
+    def plot(self):
+        pass
+
     def run(self):
         view = self.source_db.iterview(name=self.view_path, batch=10000)
         sentiment_cor_list = []
@@ -26,5 +29,6 @@ class SentimentPlaceAnalytics:
                     temp_dict['coordinates'] = [sum(x_list) / float(len(x_list)), sum(y_list) / float(len(y_list))]
                     temp_dict['sentiment'] = each.value['sentiment']
                     sentiment_cor_list.append(temp_dict)
-
+        record = {'_id': "sentiment_distribution", "data": sentiment_cor_list}
+        self.results_db.save(record)
 

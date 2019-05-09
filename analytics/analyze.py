@@ -1,6 +1,3 @@
-import math
-import mpi4py
-
 import couchdb
 
 # Connect to couch server
@@ -52,7 +49,8 @@ def main():
             hashtag_db = couch_server['hashtag']
 
         # create views
-        view_path = create_views.create_view(url=url, db_name=keywords_tweets, view_name='hashtags', mapFunc=HASHTAG_VIEW_FUNC,
+        view_path = create_views.create_view(url=url, db_name=keywords_tweets, view_name='hashtags',
+                                             mapFunc=HASHTAG_VIEW_FUNC,
                                              overwrite=True)
         hashtag_processor = HashtagProcessor(source_db=keywords_db, view_path=view_path, results_db=hashtag_db)
         hashtag_processor.run()
@@ -63,7 +61,8 @@ def main():
         except PreconditionFailed:
             swear_time_db = couch_server['time']
 
-        view_path = create_views.create_view(url=url, db_name=keywords_tweets, view_name='time_distribution', mapFunc=TIME_VIEW_FUNC,
+        view_path = create_views.create_view(url=url, db_name=keywords_tweets, view_name='time_distribution',
+                                             mapFunc=TIME_VIEW_FUNC,
                                              overwrite=True)
         swear_time_processor = TimeAnalytics(source_db=keywords_db, view_path=view_path, results_db=swear_time_db)
         swear_time_processor.run()
@@ -73,9 +72,11 @@ def main():
             sentiment_db = couch_server.create('time')
         except PreconditionFailed:
             sentiment_db = couch_server['time']
-        view_path = create_views.create_view(url=url, db_name=no_keywords_tweets, view_name='sentiment_time', mapFunc=SENTIMENT_TIME_VIEW,
+        view_path = create_views.create_view(url=url, db_name=no_keywords_tweets, view_name='sentiment_time',
+                                             mapFunc=SENTIMENT_TIME_VIEW,
                                              overwrite=True)
-        sentiment_time_processor = SentimentTimeAnalytics(source_db=no_keywords_db, view_path=view_path, results_db=sentiment_db)
+        sentiment_time_processor = SentimentTimeAnalytics(source_db=no_keywords_db, view_path=view_path,
+                                                          results_db=sentiment_db)
         sentiment_time_processor.run()
     elif rank == 3:  # sentiment distribution on map
         # create new databases to store processed data
@@ -87,7 +88,7 @@ def main():
                                              mapFunc=SENTIMENT_DISTRIBUTION_VIEW,
                                              overwrite=True)
         sent_area_processor = SentimentTimeAnalytics(source_db=no_keywords_db, view_path=view_path,
-                                                          results_db=sent_place_db)
+                                                     results_db=sent_place_db)
         sent_area_processor.run()
 
 
