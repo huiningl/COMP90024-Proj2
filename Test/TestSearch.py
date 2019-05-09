@@ -69,11 +69,11 @@ if __name__ == '__main__':
                 'honger', 'piker', 'sexpot', 'magicwand', 'wetspot', 'turnon', 'negroid', 'fuck', 'fisting']
 
     print(len(keywords))
-    query = " OR ".join(keywords)
+    query = " OR ".join(keywords[:10])
     query.strip()
     print(query)
 
-    query = 'fuck OR bitch OR bollocks'
+    # query = 'fuck OR bitch OR bollocks'
 
     url = "http://localhost:5984"
     db_name = 'new_test'

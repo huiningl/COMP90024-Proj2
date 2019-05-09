@@ -1,7 +1,7 @@
 import multiprocessing
-
+import json
 import couchdb
-from couchdb import json, PreconditionFailed
+from couchdb import PreconditionFailed
 
 
 class DB:
@@ -23,7 +23,7 @@ class DB:
         try:
             record = self.database.get(temp_tweet["id_str"])
             if record is None:  # check if db already has a copy, using id_str
-                temp_tweet["_id"] = temp_tweet["id_str"] # set the primary key
+                temp_tweet["_id"] = temp_tweet["id_str"]  # set the primary key
                 self.database.save(temp_tweet)
             else:
                 print("duplicates")

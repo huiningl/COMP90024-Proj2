@@ -24,8 +24,8 @@ class StdOutListener(StreamListener):
     def on_data(self, data):
         # self.file.writelines(json.dumps(data, ensure_ascii=False))
         # write_tweets(self.file, data, self.count)
-        print(self.db.queue)
-        self.db.queue.put(data)
+        print(data)
+        self.db.store(data)
         return True
 
     def on_status(self, status):

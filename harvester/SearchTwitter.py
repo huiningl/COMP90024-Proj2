@@ -4,6 +4,8 @@ from time import sleep
 import tweepy
 from tweepy import OAuthHandler
 
+from harvester import sentiment
+
 
 class Search:
 
@@ -12,8 +14,6 @@ class Search:
         self.db = db
 
     def search_by_keyword(self, para_dict, api):
-        print("keyword ", para_dict["keywords"])
-        print("paras ", para_dict["since_id"], "  ", para_dict["max_id"])
         # If results only below a specific ID are, set max_id to that ID.
         # else default to no upper limit, start from the most recent tweet matching the search query.
         max_id = -1
@@ -22,7 +22,10 @@ class Search:
         # else default to no lower limit, go as far back as API allows
         since_id = None if para_dict["since_id"] == -1 else para_dict["since_id"]
         tweets_per_query = 100
-        query = ' OR '.join(para_dict["keywords"])  # query contains up to 10 keywords
+        if len(para_dict["keywords"]) > 10:
+            query = ' OR '.join(para_dict["keywords"][:10])  # query contains up to 10 keywords
+        else:
+            query = ' OR '.join(para_dict["keywords"])
         print("query:  ", query)
 
         new_tweets = self.do_search(api, query, self.geocode, tweets_per_query, lang='en', since_id=since_id,
@@ -32,7 +35,9 @@ class Search:
             para_dict["since_id"] = new_tweets[0].id
             for tweet in new_tweets:
                 print(tweet)
-                self.db.store(tweet)
+                if 'sentiment' not in tweet._json.keys():
+                    tweet._json['sentiment'] = sentiment.SentimentAnalyzer.get_scores(tweet._json["text"])
+                self.db.store(tweet._json)
             max_id = new_tweets[-1].id  # oldest id was used, as we continue retrieving tweets posted even more earlier
 
         while True:
@@ -40,8 +45,9 @@ class Search:
                                         since_id=since_id, max_id=max_id)
             if new_tweets:
                 for tweet in new_tweets:
-                    print(tweet)
-                    self.db.store(tweet)
+                    if 'sentiment' not in tweet._json.keys():
+                        tweet._json['sentiment'] = sentiment.SentimentAnalyzer.get_scores(tweet._json["text"])
+                    self.db.store(tweet._json)
                 max_id = new_tweets[-1].id
 
     def do_search(self, api, query, geocode, count=100, lang='en', since_id=None, max_id=-1):
@@ -63,7 +69,6 @@ class Search:
         access_token_secret = group["access_token_secret"]
         consumer_key = group["consumer_key"]
         consumer_secret = group["consumer_secret"]
-        keywords = group["keywords"]
 
         # Authentication
         auth = OAuthHandler(consumer_key, consumer_secret)
@@ -73,20 +78,21 @@ class Search:
 
         return api
 
-    def run(self, group):
+    def run(self, group, search_keywords):
         api = self.setAPI(group)
         para_dict = {}
         para_dict["since_id"] = -1
         para_dict["max_id"] = -1
-        para_dict["keywords"] = group["keywords"]
+        para_dict["keywords"] = search_keywords
 
         print("Now start searching for ", para_dict)
         while True:
             try:
                 self.search_by_keyword(para_dict, api)
             except Exception as e:
+                print(e)
                 until = int(api.last_response.headers['x-rate-limit-reset'])
-                # Parse the UTC time
+
                 until = datetime.fromtimestamp(until)
                 delay = (until - datetime.now()).total_seconds()
                 print("Rate Limit Reached! Search API not available until {}.".format(until))
