@@ -15,11 +15,12 @@ class Plotter:
         db = self.couch_server[db_name]
         data = db.get(doc_id)
 
+        plt.clf()
         fig = plt.figure()
         for each in data['data']:
             plt.plot(each['coordinates'])
         plt.show()
-        fig.savefig('sample.png')
+        fig.savefig('./static/images/figures/sample.png')
 
 
     def other_plot(self):

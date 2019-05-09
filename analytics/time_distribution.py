@@ -71,5 +71,5 @@ class SentimentTimeAnalytics:
                 else:
                     sentiment_dict['night'][sentiment] = 1
 
-        record = {"_id": "sentiment_time", 'data':sentiment_dict}
+        record = {"_id": "sentiment_time", 'data': sentiment_dict}
         self.results_db.save(record)
