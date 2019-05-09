@@ -29,6 +29,7 @@ class SentimentPlaceAnalytics:
                     temp_dict['coordinates'] = [sum(x_list) / float(len(x_list)), sum(y_list) / float(len(y_list))]
                     temp_dict['sentiment'] = each.value['sentiment']
                     sentiment_cor_list.append(temp_dict)
+
         record = {'_id': "sentiment_distribution", "data": sentiment_cor_list}
         self.results_db.save(record)
 

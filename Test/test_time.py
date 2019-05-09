@@ -1,5 +1,7 @@
 from collections import Counter
 
+import couchdb
+
 from analytics import create_views
 from analytics.time_distribution import SentimentTimeAnalytics
 from harvester import Database
@@ -17,13 +19,14 @@ if __name__ == '__main__':
     db = Database.DB(url, db_name)
     view_path = create_views.create_view(url=url, db_name=db_name, view_name='sentiment_time', mapFunc=SENTIMENT_TIME_VIEW, overwrite=True)
     view = db.database.view(name=view_path)
+    test_db = couchdb.Server(url=url)['test_db']
 
     # hours = []
     # for each in view:
     #     hours.append(each.value)
     # total_num = len(hours)
     # count = Counter(hours)
-    x = SentimentTimeAnalytics(source_db=db.database, view_path=view_path, results_db=db)
+    x = SentimentTimeAnalytics(source_db=db.database, view_path=view_path, results_db=test_db)
     sentiment_dict = x.run()
     print(sentiment_dict)
     # for k, v in count.items():
