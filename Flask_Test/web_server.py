@@ -9,7 +9,7 @@ web_app = Flask(__name__)
 def home():
     plotter = Plotter()
     # draw figures
-    plotter.bar_plot('sentiment_distribution', 'test_db')
+    plotter.bar_plot('sentiment_dis tribution', 'test_db')
 
     return render_template("index.html")
 
