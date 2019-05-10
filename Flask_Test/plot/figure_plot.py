@@ -78,49 +78,65 @@ class Plotter:
         show(p)
 
     def bar_plot_time_distribution(self, doc_id, db_name):
-        couch_server = couchdb.Server(url='http://10.9.131.221:5984')
-        source_db = couch_server['test_db']
-        data = source_db.get('time_distribution')
-        original_data = data['data']
-        modified_data = original_data
-        modified_data['24'] = modified_data['0']
-        del modified_data['0']
-        print('modified_data: ', modified_data)
+        if __name__ == '__main__':
+            couch_server = couchdb.Server(url='http://10.9.131.221:5984')
+            source_db = couch_server['test_db']
+            data = source_db.get('time_distribution')
+            original_data = data['data']
+            modified_data = original_data
+            modified_data['24'] = modified_data['0']
+            del modified_data['0']
+            print('modified_data: ', modified_data)
 
-        # TODO: Sort Key
-        # for k,v in modified_data.items():
-        #     int(k)
-        #     print(k)
-        #     k = sorted(k)
-        #
-        # print(modified_data)
+            s_data = {}
+            for k, v in modified_data.items():
+                nk_list = []
+                nk = int(k)
+                nk_list.append(nk)
+                for n in nk_list:
+                    s_data[n] = v
+            print(s_data)
+            od = collections.OrderedDict(sorted(s_data.items()))
+            print('od: ', od)
+            sorted_data = {}
+            for k, v in od.items():
+                sorted_data[k] = v
+            print(sorted_data)
+            r_data = {}
+            for k, v in sorted_data.items():
+                nk_list = []
+                nk = str(k)
+                nk_list.append(nk)
+                for n in nk_list:
+                    r_data[n] = v
+            print("r_data", r_data)
 
-        time = []
-        num = []
-        for k, v in modified_data.items():
-            time.append(k)
-            num.append(v)
-        print(time)
-        print(num)
-        rate_list = []
-        suml = sum(num)
-        for n in num:
-            rate = n / suml
-            rate_list.append(rate)
-        print("rate_list: ", rate_list)
+            time = []
+            num = []
+            for k, v in r_data.items():
+                time.append(k)
+                num.append(v)
+            print("time:", time)
+            print(num)
+            rate_list = []
+            suml = sum(num)
+            for n in num:
+                rate = n / suml
+                rate_list.append(rate)
+            print("rate_list: ", rate_list)
 
-        TOOLTIPS = [("time", "@x"), ("number", "@y")]
+            TOOLTIPS = [("time", "@x"), ("rate", "@y")]
 
-        p = figure(x_range=time, plot_height=400, title="Time Distribution",
-                   toolbar_location=None, tools="hover", tooltips=TOOLTIPS)
+            p = figure(x_range=time, plot_height=400, title="Time Distribution",
+                       toolbar_location=None, tools="hover", tooltips=TOOLTIPS)
 
-        # p.vbar(x=time, top=num, width=0.9)
-        p.line(time, num, line_width=0.9)
+            # p.vbar(x=time, top=num, width=0.9)
+            p.line(time, rate_list, line_width=0.9)
 
-        p.xgrid.grid_line_color = None
-        p.y_range.start = 0
+            p.xgrid.grid_line_color = None
+            p.y_range.start = 0
 
-        show(p)
+            show(p)
 
 
 
